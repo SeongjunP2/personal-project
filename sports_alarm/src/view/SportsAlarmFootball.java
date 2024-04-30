@@ -180,7 +180,7 @@ public class SportsAlarmFootball {
             panelCalMain.add(button);
         }
         
-        txtpnMonth.setText(Integer.toString(month + 1)); // 현재 월 갱신
+        txtpnMonth.setText(Integer.toString(month + 1) + "월"); // 현재 월 갱신
 
         frame.revalidate();
         frame.repaint();
