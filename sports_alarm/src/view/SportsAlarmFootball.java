@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import java.awt.FlowLayout;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
@@ -26,16 +25,17 @@ public class SportsAlarmFootball {
 	private JButton btnPrevMonth;
 	private JTextPane txtpnMonth;
 	private JButton btnNextMonth;
-	private JPanel panelCalMain;
+	protected JPanel panelCalMain;
 	
-	private Calendar cal = Calendar.getInstance();
+	protected Calendar cal = Calendar.getInstance();
 	private JPanel panel;
 	private JTextField textDate;
 	private JPanel panel_1;
 	private JComboBox comboBoxTeam;
 	private JLabel lblNewLabel;
 	
-	private String[] week = {"일", "월", "화", "수", "목", "금", "토"};
+	protected String[] week = {"일", "월", "화", "수", "목", "금", "토"};
+	private JButton btnBack;
 
 	/**
 	 * Launch the application.
@@ -71,7 +71,7 @@ public class SportsAlarmFootball {
 		frame.getContentPane().setLayout(null);
 		
 		panelCal = new JPanel();
-		panelCal.setBounds(12, 43, 486, 396);
+		panelCal.setBounds(12, 43, 606, 396);
 		frame.getContentPane().add(panelCal);
 		panelCal.setLayout(new BorderLayout(0, 0));
 		
@@ -112,7 +112,7 @@ public class SportsAlarmFootball {
         textDate.setColumns(10);
         
         panel_1 = new JPanel();
-        panel_1.setBounds(12, 10, 606, 33);
+        panel_1.setBounds(12, 10, 519, 33);
         frame.getContentPane().add(panel_1);
         
         lblNewLabel = new JLabel("Team");
@@ -120,6 +120,17 @@ public class SportsAlarmFootball {
         
         comboBoxTeam = new JComboBox();
         panel_1.add(comboBoxTeam);
+        
+        btnBack = new JButton("Back");
+        btnBack.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		SportsAlarmMain sam = new SportsAlarmMain();
+        		sam.setVisible(true);
+				frame.setVisible(false);
+        	}
+        });
+        btnBack.setBounds(533, 10, 85, 33);
+        frame.getContentPane().add(btnBack);
 	}
 
 	public void setVisible(boolean b) {
@@ -161,13 +172,13 @@ public class SportsAlarmFootball {
         }
 
         int startDay = cal.get(Calendar.DAY_OF_WEEK); // 첫째 날의 요일
-        int numOfDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // 해당 달의 총 일 수
+        int monthDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // 해당 달의 총 일 수
 
         for (int i = 1; i < startDay; i++) {
             panelCalMain.add(new JLabel("")); // 첫째 날 이전의 빈 레이블 추가
         }
 
-        for (int i = 1; i <= numOfDaysInMonth; i++) {
+        for (int i = 1; i <= monthDay; i++) {
             JButton button = new JButton(Integer.toString(i));
             button.addActionListener(new ActionListener() {
             	public void actionPerformed(ActionEvent e) {

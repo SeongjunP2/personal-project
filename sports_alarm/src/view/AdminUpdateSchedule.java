@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 
-public class SportsAlarmBaseball {
+public class AdminUpdateSchedule {
 
 	private JFrame frame;
 	private JPanel panelCal;
@@ -44,7 +44,7 @@ public class SportsAlarmBaseball {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SportsAlarmBaseball window = new SportsAlarmBaseball();
+					AdminUpdateSchedule window = new AdminUpdateSchedule();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -56,7 +56,7 @@ public class SportsAlarmBaseball {
 	/**
 	 * Create the application.
 	 */
-	public SportsAlarmBaseball() {
+	public AdminUpdateSchedule() {
 		initialize();
 		createCalendar();
 	}
@@ -137,29 +137,6 @@ public class SportsAlarmBaseball {
 		frame.setVisible(b);
 	}
 	
-//	// 현재 날짜의 마지막 일
-//	public int getCurrentDate() {
-//		cal = Calendar.getInstance();
-//		return cal.getMaximum(Calendar.DAY_OF_MONTH);
-//	}
-//	
-//	// 해당 월의 시작 요일 구하기
-//	// 개발 원리 : 날짜 객체를 해당 월의 1일로 조작한 후, 요일 구하기
-//	// 사용 방법 : 2021년 2월을 구할시 2021, 1을 넣으면 됨
-//	public int getFirstDayOfMonth(int yy, int mm) {
-//		Calendar cal = Calendar.getInstance(); // 날짜 객체 생성
-//		cal.set(yy, mm, 1);
-//		return cal.get(Calendar.DAY_OF_WEEK) - 1;// 요일은 1부터 시작으로 배열과 쌍을 맞추기 위해 -1
-//	}
-//
-//	public int getLastDate(int dd) {
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.MONTH, 8); // 9월 세팅 (월 세팅은 0~11이기에..)
-//		int dayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // 마지막 날짜 반환 (2018년 9월 30일)
-//		cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//		return dayOfMonth;
-//	}
-	
     private void createCalendar() {
         panelCalMain.removeAll(); // 이전에 생성된 캘린더 버튼들을 제거
         int year = cal.get(Calendar.YEAR);
@@ -179,16 +156,16 @@ public class SportsAlarmBaseball {
         }
 
         for (int i = 1; i <= monthDay; i++) {
-            JButton button = new JButton(Integer.toString(i));
-            button.addActionListener(new ActionListener() {
+            JButton dayButton = new JButton(Integer.toString(i));
+            dayButton.addActionListener(new ActionListener() {
             	public void actionPerformed(ActionEvent e) {
             		textDate.setText(
             				year + "년 " + 
             				(month + 1) + "월 " + 
-            				button.getText() + "일 ");
+            				dayButton.getText() + "일 ");
             	}
             });
-            panelCalMain.add(button);
+            panelCalMain.add(dayButton);
         }
         
         txtpnMonth.setText(Integer.toString(month + 1) + "월"); // 현재 월 갱신

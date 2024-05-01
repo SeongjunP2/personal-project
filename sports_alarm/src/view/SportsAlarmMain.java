@@ -7,20 +7,19 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import java.awt.CardLayout;
 import java.awt.GridLayout;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import javax.swing.JPanel;
 
 public class SportsAlarmMain {
 
 	private JFrame frame;
 	private JButton btnFootball;
 	private JButton btnBaseball;
-	private JLabel lblTitle;
+	private JLabel lblTitle_1;
+	private JPanel panel;
+	private JButton btnAdminPage;
 
 	/**
 	 * Launch the application.
@@ -72,11 +71,31 @@ public class SportsAlarmMain {
 		});
 		frame.getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
 		
-		lblTitle = new JLabel("AlarmProgram");
-		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTitle.setFont(new Font("굴림", Font.BOLD, 12));
-		frame.getContentPane().add(lblTitle);
+		panel = new JPanel();
+		frame.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		lblTitle_1 = new JLabel("AlarmProgram");
+		lblTitle_1.setBounds(141, 58, 221, 46);
+		lblTitle_1.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitle_1.setFont(new Font("굴림", Font.BOLD, 12));
+		panel.add(lblTitle_1);
+		
+		btnAdminPage = new JButton("AdminLogin");
+		btnAdminPage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				AdminLogin admin = new AdminLogin();
+				admin.setVisible(true);
+				frame.setVisible(false);
+			}
+		});
+		btnAdminPage.setBounds(390, 10, 97, 23);
+		panel.add(btnAdminPage);
 		frame.getContentPane().add(btnFootball);
 		frame.getContentPane().add(btnBaseball);
+	}
+	
+	public void setVisible(boolean b) {
+		frame.setVisible(b);
 	}
 }
