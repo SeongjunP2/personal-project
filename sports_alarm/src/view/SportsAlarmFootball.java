@@ -8,13 +8,19 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.util.Calendar;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import java.awt.Font;
+import javax.swing.SwingConstants;
 
 public class SportsAlarmFootball {
 
@@ -28,7 +34,7 @@ public class SportsAlarmFootball {
 	protected JPanel panelCalMain;
 	
 	protected Calendar cal = Calendar.getInstance();
-	private JPanel panel;
+	private JPanel panelContent;
 	private JTextField textDate;
 	private JPanel panel_1;
 	private JComboBox comboBoxTeam;
@@ -36,6 +42,9 @@ public class SportsAlarmFootball {
 	
 	protected String[] week = {"일", "월", "화", "수", "목", "금", "토"};
 	private JButton btnBack;
+	
+	//파라미터: 색상, 선 두께, border의 모서리를 둥글게 할 것인지
+	private LineBorder border = new LineBorder(Color.black, 1, true); 
 
 	/**
 	 * Launch the application.
@@ -44,6 +53,7 @@ public class SportsAlarmFootball {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+				    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); // Swing 디자인을 LookAndFeel 테마로 변경
 					SportsAlarmFootball window = new SportsAlarmFootball();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
@@ -77,12 +87,14 @@ public class SportsAlarmFootball {
 		
 		panelCalButton = new JPanel();
 		panelCal.add(panelCalButton, BorderLayout.NORTH);
+		panelCalButton.setBorder(border);
 		
 		panelCalMain = new JPanel();
 		panelCal.add(panelCalMain, BorderLayout.CENTER);
 		panelCalMain.setLayout(new GridLayout(0, 7, 0, 0)); // panelCalMain에 7만큼만 출력
 		
 		btnPrevMonth = new JButton("Prev");
+		btnPrevMonth.setFont(new Font("굴림", Font.PLAIN, 14));
 		btnPrevMonth.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cal.add(Calendar.MONTH, -1);
@@ -92,6 +104,7 @@ public class SportsAlarmFootball {
 		panelCalButton.add(btnPrevMonth);
 		
 		btnNextMonth = new JButton("Next");
+		btnNextMonth.setFont(new Font("굴림", Font.PLAIN, 14));
 		btnNextMonth.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cal.add(Calendar.MONTH, 1); // 다음 달로 이동
@@ -100,28 +113,34 @@ public class SportsAlarmFootball {
         });
         
         txtpnMonth = new JTextPane();
+        txtpnMonth.setFont(new Font("굴림", Font.PLAIN, 14));
         txtpnMonth.setText(Integer.toString(cal.get(Calendar.MONTH) + 1));
         panelCalButton.add(txtpnMonth);
         panelCalButton.add(btnNextMonth);
         
-        panel = new JPanel();
-        panelCal.add(panel, BorderLayout.EAST);
+        panelContent = new JPanel();
+        panelCal.add(panelContent, BorderLayout.EAST);
+        panelContent.setBorder(border);
         
         textDate = new JTextField();
-        panel.add(textDate);
+        textDate.setHorizontalAlignment(SwingConstants.CENTER);
+        textDate.setFont(new Font("굴림", Font.PLAIN, 13));
+        panelContent.add(textDate);
         textDate.setColumns(10);
         
         panel_1 = new JPanel();
         panel_1.setBounds(12, 10, 519, 33);
         frame.getContentPane().add(panel_1);
         
-        lblNewLabel = new JLabel("Team");
+        lblNewLabel = new JLabel("팀선택");
+        lblNewLabel.setFont(new Font("굴림", Font.PLAIN, 14));
         panel_1.add(lblNewLabel);
         
         comboBoxTeam = new JComboBox();
         panel_1.add(comboBoxTeam);
         
         btnBack = new JButton("Back");
+        btnBack.setFont(new Font("굴림", Font.PLAIN, 12));
         btnBack.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		SportsAlarmMain sam = new SportsAlarmMain();
@@ -132,33 +151,11 @@ public class SportsAlarmFootball {
         btnBack.setBounds(533, 10, 85, 33);
         frame.getContentPane().add(btnBack);
 	}
+	
 
 	public void setVisible(boolean b) {
 		frame.setVisible(b);
 	}
-	
-//	// 현재 날짜의 마지막 일
-//	public int getCurrentDate() {
-//		cal = Calendar.getInstance();
-//		return cal.getMaximum(Calendar.DAY_OF_MONTH);
-//	}
-//	
-//	// 해당 월의 시작 요일 구하기
-//	// 개발 원리 : 날짜 객체를 해당 월의 1일로 조작한 후, 요일 구하기
-//	// 사용 방법 : 2021년 2월을 구할시 2021, 1을 넣으면 됨
-//	public int getFirstDayOfMonth(int yy, int mm) {
-//		Calendar cal = Calendar.getInstance(); // 날짜 객체 생성
-//		cal.set(yy, mm, 1);
-//		return cal.get(Calendar.DAY_OF_WEEK) - 1;// 요일은 1부터 시작으로 배열과 쌍을 맞추기 위해 -1
-//	}
-//
-//	public int getLastDate(int dd) {
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.MONTH, 8); // 9월 세팅 (월 세팅은 0~11이기에..)
-//		int dayOfMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH); // 마지막 날짜 반환 (2018년 9월 30일)
-//		cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-//		return dayOfMonth;
-//	}
 	
     private void createCalendar() {
         panelCalMain.removeAll(); // 이전에 생성된 캘린더 버튼들을 제거
@@ -168,6 +165,9 @@ public class SportsAlarmFootball {
 
         for (String day : week) {
             JLabel dayLabel = new JLabel(day);
+            dayLabel.setBorder(border);
+            dayLabel.setFont(new Font("굴림", Font.BOLD, 17));
+            dayLabel.setHorizontalAlignment(SwingConstants.CENTER);
             panelCalMain.add(dayLabel); // 요일 표시를 위한 레이블 추가
         }
 
@@ -179,16 +179,16 @@ public class SportsAlarmFootball {
         }
 
         for (int i = 1; i <= monthDay; i++) {
-            JButton button = new JButton(Integer.toString(i));
-            button.addActionListener(new ActionListener() {
+        	JButton btnDay = new JButton(Integer.toString(i));
+        	btnDay.addActionListener(new ActionListener() {
             	public void actionPerformed(ActionEvent e) {
             		textDate.setText(
             				year + "년 " + 
             				(month + 1) + "월 " + 
-            				button.getText() + "일 ");
+            				btnDay.getText() + "일 ");
             	}
             });
-            panelCalMain.add(button);
+            panelCalMain.add(btnDay);
         }
         
         txtpnMonth.setText(Integer.toString(month + 1) + "월"); // 현재 월 갱신

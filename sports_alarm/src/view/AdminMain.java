@@ -20,7 +20,7 @@ public class AdminMain extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void AdminMain() {
+	public static void main() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -56,7 +56,9 @@ public class AdminMain extends JFrame {
 		btnEditTeam = new JButton("Edit Team");
 		btnEditTeam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				AdminEditTeam admin = new AdminEditTeam();
+				admin.setVisible(true);
+				dispose();
 			}
 		});
 		btnEditTeam.setBounds(5, 50, 424, 80);

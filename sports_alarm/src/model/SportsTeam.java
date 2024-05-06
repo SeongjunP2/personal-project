@@ -1,32 +1,29 @@
 package model;
 
-public class SportsAlarm {
+public class SportsTeam {
 	
     public static final class Entity {
         // 데이터베이스 테이블 이름을 상수로 선언. 
-        public static final String TBL_FOOTBALL_TEAMS = "FOOTBALL_TEAMS";
+        public static final String TBL_SPORTS_TEAMS = "SPORTS_TEAMS";
 
         // 데이터베이스 FOOTBALL_TEAMS 테이블의 컬럼 이름들을 상수로 선언.
         public static final String COL_ID = "ID";
         public static final String COL_LEAGUE = "LEAGUE";
         public static final String COL_TEAM = "TEAM";
-        public static final String COL_COUNTRY = "COUNTRY";
-        public static final String COL_EMBLEMPATH = "EMBLEMPATH";
+        public static final String COL_EMBLEMPATH = "EMBLEM_PATH";
     }
 	
 	private int id;
 	private String league;
 	private String team;
-	private String country;
 	private String emblemPath;
 	
-	public SportsAlarm() {}
+	public SportsTeam() {}
 	
-	public SportsAlarm(int id, String league, String team, String country, String emblemPath) {
+	public SportsTeam(int id, String league, String team, String emblemPath) {
 		this.id = id;
 		this.league = league;
 		this.team = team;
-		this.country = country;
 		this.emblemPath = emblemPath;
 	}
 
@@ -54,14 +51,6 @@ public class SportsAlarm {
 		this.team = team;
 	}
 
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
-
 	public String getEmblemPath() {
 		return emblemPath;
 	}
@@ -72,8 +61,7 @@ public class SportsAlarm {
 
 	@Override
 	public String toString() {
-		return "SportsAlarm [id=" + id + ", league=" + league + ", team=" + team + ", country=" + country
-				+ ", emblemPath=" + emblemPath + "]";
+		return "SportsTeam [id=" + id + ", league=" + league + ", team=" + team + ", emblemPath=" + emblemPath + "]";
 	}
 
 }
