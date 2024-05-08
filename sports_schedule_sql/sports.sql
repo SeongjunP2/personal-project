@@ -29,3 +29,5 @@ create table schedule_date (
 );
 
 drop table schedule_date;
+
+select created_date from schedule_date where team = '첼시';

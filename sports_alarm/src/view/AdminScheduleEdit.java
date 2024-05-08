@@ -82,7 +82,7 @@ public class AdminScheduleEdit implements CreateNotify, UpdateNotify {
      */
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 482, 552);
+        frame.setBounds(100, 100, 645, 552);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("스포츠 팀 편집");
         
@@ -150,7 +150,7 @@ public class AdminScheduleEdit implements CreateNotify, UpdateNotify {
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
         
         table = new JTable();
-        table.setFont(new Font("굴림", Font.PLAIN, 12));
+        table.setFont(new Font("굴림", Font.PLAIN, 16));
         tableModel = new DefaultTableModel(null, COLUMN_NAMES);
         table.setModel(tableModel);
         scrollPane.setViewportView(table);
@@ -161,7 +161,7 @@ public class AdminScheduleEdit implements CreateNotify, UpdateNotify {
         if (index == -1) { // JTable에서 선택된 행이 없을 때
             JOptionPane.showMessageDialog(
                     frame, 
-                    "상세보기할 행을 먼저 선택하세요.", 
+                    "상세보기할 일정을 먼저 선택하세요.", 
                     "경고", 
                     JOptionPane.WARNING_MESSAGE);
             return;
@@ -217,7 +217,7 @@ public class AdminScheduleEdit implements CreateNotify, UpdateNotify {
 		if (index == -1) { // JTable에서 선택된 행이 없을때
 			JOptionPane.showMessageDialog(
 					frame, 
-					"삭제할 행을 선택하세요.", 
+					"삭제할 일정을 선택하세요.", 
 					"경고", 
 					JOptionPane.WARNING_MESSAGE);
 			return;

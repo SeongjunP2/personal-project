@@ -124,7 +124,7 @@ public class AdminTeamUpdateSchedule {
         btnBack = new JButton("Back");
         btnBack.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		SportsAlarmMain sam = new SportsAlarmMain();
+        		SportsMain sam = new SportsMain();
         		sam.setVisible(true);
 				frame.setVisible(false);
         	}

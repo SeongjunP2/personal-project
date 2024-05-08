@@ -132,16 +132,16 @@ public class AdminTeamDetailsFrame extends JFrame {
         
         btnUpdate = new JButton("업데이트");
         btnUpdate.addActionListener((e) -> updateTeam());
-        
-        textTeam = new JTextField();
-        textTeam.setText((String) null);
-        textTeam.setFont(new Font("D2Coding", Font.PLAIN, 20));
-        textTeam.setColumns(10);
-        textTeam.setBounds(145, 126, 346, 48);
-        contentPane.add(textTeam);
         btnUpdate.setFont(new Font("굴림", Font.BOLD, 22));
         btnUpdate.setBounds(12, 252, 176, 48);
         contentPane.add(btnUpdate);
+        
+        textTeam = new JTextField();
+        textTeam.setText((String) null);
+        textTeam.setFont(new Font("굴림", Font.PLAIN, 18));
+        textTeam.setColumns(10);
+        textTeam.setBounds(145, 126, 346, 48);
+        contentPane.add(textTeam);
         
         btnCancel = new JButton("취소");
         btnCancel.addActionListener((e) -> dispose());

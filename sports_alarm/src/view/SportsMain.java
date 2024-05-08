@@ -15,7 +15,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.JPanel;
 
-public class SportsAlarmMain {
+public class SportsMain {
 
 	private JFrame frame;
 	private JButton btnFootball;
@@ -33,7 +33,7 @@ public class SportsAlarmMain {
 			public void run() {
 				try {
 				    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); // Swing 디자인을 LookAndFeel 테마로 변경
-					SportsAlarmMain window = new SportsAlarmMain();
+					SportsMain window = new SportsMain();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -45,7 +45,7 @@ public class SportsAlarmMain {
 	/**
 	 * Create the application.
 	 */
-	public SportsAlarmMain() {
+	public SportsMain() {
 		initialize();
 	}
 
@@ -65,7 +65,7 @@ public class SportsAlarmMain {
 		btnFootball = new JButton(setImageSize("EPL/epl.png", 230, 180));
 		btnFootball.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SportsAlarmFootball saf = new SportsAlarmFootball();
+				SportsFootball saf = new SportsFootball();
 				saf.setVisible(true);
 				frame.setVisible(false);
 			}
@@ -74,7 +74,7 @@ public class SportsAlarmMain {
 		btnBaseball = new JButton(setImageSize("KBO/kbo.png", 230, 180));
 		btnBaseball.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SportsAlarmBaseball sab = new SportsAlarmBaseball();
+				SportsBaseball sab = new SportsBaseball();
 				sab.setVisible(true);
 				frame.setVisible(false);
 			}
@@ -86,18 +86,18 @@ public class SportsAlarmMain {
 		panelTitle.setLayout(null);
 		
 		lblIconAlarm = new JLabel(setImageSize("alarm.png", 30, 30));
-		lblIconAlarm.setBounds(128, 58, 57, 46);
+		lblIconAlarm.setBounds(119, 58, 57, 46);
 		panelTitle.add(lblIconAlarm);
 		
-		lblTitle = new JLabel("스포츠 중계 알람");
+		lblTitle = new JLabel("스포츠 중계 일정");
 		lblTitle.setBounds(147, 58, 221, 46);
 		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitle.setVerticalAlignment(SwingConstants.CENTER);
-		lblTitle.setFont(new Font("굴림", Font.BOLD, 19));
+		lblTitle.setFont(new Font("굴림", Font.BOLD, 22));
 		panelTitle.add(lblTitle);
 		
 		btnAdminPage = new JButton("팀, 일정 관리");
-		btnAdminPage.setFont(new Font("굴림", Font.PLAIN, 12));
+		btnAdminPage.setFont(new Font("굴림", Font.PLAIN, 16));
 		btnAdminPage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AdminMain admin = new AdminMain();
@@ -105,7 +105,7 @@ public class SportsAlarmMain {
 				frame.setVisible(false);
 			}
 		});
-		btnAdminPage.setBounds(382, 10, 105, 23);
+		btnAdminPage.setBounds(360, 10, 127, 23);
 		panelTitle.add(btnAdminPage);
 		frame.getContentPane().add(btnFootball);
 		frame.getContentPane().add(btnBaseball);

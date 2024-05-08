@@ -149,7 +149,7 @@ public class ScheduleDao {
         ResultSet rs = null;
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            stmt = conn.prepareStatement("select team from " + TBL_SCHEDULE_DATE); // 상대 팀이름만 불러오는 SQL 문장
+            stmt = conn.prepareStatement("select otherteam from " + TBL_SCHEDULE_DATE); // 상대 팀이름만 불러오는 SQL 문장
             rs = stmt.executeQuery();
             while (rs.next()) {
                 teamNames.add(rs.getString("team"));
@@ -163,6 +163,42 @@ public class ScheduleDao {
         return teamNames;
     }
     
+    // 수정된 getOtherTeamAndCreatedDate 메서드
+    public List<Schedule> getOtherTeamAndCreatedDate(String teamName) {
+        List<Schedule> schedules = new ArrayList<>();
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            // 수정된 SQL 쿼리: 선택한 팀이 team 열이나 other_team 열 중 어느 쪽에도 나오는 경기 일정을 모두 가져옴.
+            String sql = "select other_team, created_date from " + TBL_SCHEDULE_DATE +  
+                         " where team = ?" + 
+                         " union" + 
+                         " select team, created_date from " + TBL_SCHEDULE_DATE +  
+                         " where other_team = ?" +
+                         " order by created_date";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, teamName);
+            stmt.setString(2, teamName);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                Schedule schedule = new Schedule();
+                schedule.setOtherTeam(rs.getString("other_team"));
+                schedule.setDate(rs.getString("created_date"));
+                schedules.add(schedule);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        
+        return schedules;
+    }
+
+    
 	// 특정 팀의 일정을 가져오는 메서드
 	public List<Schedule> getTeamSchedules(String teamName) {
 		List<Schedule> teamSchedules = new ArrayList<>();
@@ -172,7 +208,7 @@ public class ScheduleDao {
 		ResultSet rs = null;
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
-			String sql = "select * from " + TBL_SCHEDULE_DATE + " where " + COL_TEAM + " = ?";
+			String sql = "select created_date from " + TBL_SCHEDULE_DATE + " where " + COL_TEAM + " = ?";
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, teamName);
 			rs = stmt.executeQuery();
@@ -188,6 +224,36 @@ public class ScheduleDao {
 
 		return teamSchedules;
 	}
+	
+	// sports_teams 테이블과 schedule_date 테이블을 조인하여 해당하는 emblem_path를 반환하는 메서드
+	public String getOtherTeamEmblemPath(String otherTeam) {
+	    String emblemPath = null;
+	    
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+	    try {
+	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	        // sports_teams와 schedule_date를 조인하여 상호 일치하는 행을 가져오는 SQL 문장
+	        String sql = "select st.emblem_path " +
+	                     "from sports_teams st " +
+	                     "inner join schedule_date sd on st.team = sd.other_team " +
+	                     "where sd.other_team = ?";
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setString(1, otherTeam);
+	        rs = stmt.executeQuery();
+	        if (rs.next()) {
+	            emblemPath = rs.getString("emblem_path");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        closeResources(conn, stmt, rs);
+	    }
+	    
+	    return emblemPath;
+	}
+
     
     // create(SportsAlarm sportsAlarm) 메서드에서 사용할 SQL:
     // insert into football_teams (team, otherTeam, date) values (?, ?, ?)
@@ -352,7 +418,7 @@ public class ScheduleDao {
     
     private static final String SQL_UPDATE = String.format(
             "update %s set %s = ?, %s = ?, %s = ? where %s = ?", 
-            TBL_SCHEDULE_DATE, COL_TEAM, COL_TEAM, COL_OTHER_TEAM, COL_ID);
+            TBL_SCHEDULE_DATE, COL_TEAM, COL_OTHER_TEAM, COL_CREATED_DATE, COL_ID);
     
     /**
      * football_teams 테이블 업데이트.

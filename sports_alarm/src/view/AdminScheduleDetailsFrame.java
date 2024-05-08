@@ -55,7 +55,6 @@ public class AdminScheduleDetailsFrame extends JFrame {
     private JLabel lblContentSchedule;
 	private JComboBox<String> comboBoxOtherTeam;
 	private JTextField textSchedule;
-	private JTextField textFieldDate;
 	
 	private boolean comboBoxTeamSelected = false; // comboBoxTeam이 선택되었는지 여부를 나타내는 플래그
 
@@ -183,7 +182,7 @@ public class AdminScheduleDetailsFrame extends JFrame {
 		
 		textSchedule = new JTextField();
 		textSchedule.setText((String) null);
-		textSchedule.setFont(new Font("D2Coding", Font.PLAIN, 20));
+		textSchedule.setFont(new Font("굴림", Font.PLAIN, 18));
 		textSchedule.setColumns(10);
 		textSchedule.setBounds(145, 184, 346, 48);
 		contentPane.add(textSchedule);
@@ -207,7 +206,7 @@ public class AdminScheduleDetailsFrame extends JFrame {
         Schedule schedule = dao.read(teamId);
         if (schedule == null) return;
         
-        textId.setText(teamId + "");
+        textId.setText(String.valueOf(teamId));
         // 팀의 리그 정보를 콤보박스에 설정
         comboBoxTeam.setSelectedItem(schedule.getTeam());
         comboBoxOtherTeam.setSelectedItem(schedule.getOtherTeam());
@@ -223,7 +222,7 @@ public class AdminScheduleDetailsFrame extends JFrame {
     	
 		String team = (String) comboBoxTeam.getSelectedItem();
 		String otherTeam = (String) comboBoxOtherTeam.getSelectedItem();
-		String date = textFieldDate.getText();
+		String date = textSchedule.getText().trim();
         if (team.equals("") || otherTeam.equals("") || date.equals("")) {
             JOptionPane.showMessageDialog(this, 
                     "팀, 상대 팀, 일정은 반드시 입력, 지정해야 합니다!", 
@@ -231,7 +230,7 @@ public class AdminScheduleDetailsFrame extends JFrame {
             return;
         }
         
-		Schedule schedule = new Schedule(0, team, otherTeam, date);
+		Schedule schedule = new Schedule(teamId, team, otherTeam, date);
         int result = dao.update(schedule);
         if (result == 1) {
             app.notifyUpdateSuccess();

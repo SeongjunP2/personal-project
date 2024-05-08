@@ -51,7 +51,7 @@ public class AdminMain extends JFrame {
 		contentPane.setLayout(null);
 		
 		btnSchedule = new JButton("일정 관리");
-		btnSchedule.setFont(new Font("Gulim", Font.PLAIN, 12));
+		btnSchedule.setFont(new Font("굴림", Font.BOLD, 20));
 		btnSchedule.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AdminScheduleEdit admin = new AdminScheduleEdit();
@@ -63,7 +63,7 @@ public class AdminMain extends JFrame {
 		contentPane.add(btnSchedule);
 		
 		btnEditTeam = new JButton("팀 관리");
-		btnEditTeam.setFont(new Font("Gulim", Font.PLAIN, 12));
+		btnEditTeam.setFont(new Font("굴림", Font.BOLD, 20));
 		btnEditTeam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AdminTeamEdit admin = new AdminTeamEdit();
@@ -78,7 +78,7 @@ public class AdminMain extends JFrame {
 		btnMain.setFont(new Font("굴림", Font.BOLD, 12));
 		btnMain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SportsAlarmMain sam = new SportsAlarmMain();
+				SportsMain sam = new SportsMain();
 				sam.setVisible(true);
 				dispose();
 			}

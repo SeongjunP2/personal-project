@@ -82,7 +82,7 @@ public class AdminLogin {
 		btnBack.setFont(new Font("Gulim", Font.PLAIN, 12));
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-        		SportsAlarmMain sam = new SportsAlarmMain();
+        		SportsMain sam = new SportsMain();
         		sam.setVisible(true);
 				frame.setVisible(false);
 			}
