@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Font;
 
 public class AdminMain extends JFrame {
 
@@ -49,14 +50,23 @@ public class AdminMain extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		btnSchedule = new JButton("Edit Schedule");
+		btnSchedule = new JButton("일정 관리");
+		btnSchedule.setFont(new Font("Gulim", Font.PLAIN, 12));
+		btnSchedule.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				AdminScheduleEdit admin = new AdminScheduleEdit();
+				admin.setVisible(true);
+				dispose();
+			}
+		});
 		btnSchedule.setBounds(5, 140, 424, 80);
 		contentPane.add(btnSchedule);
 		
-		btnEditTeam = new JButton("Edit Team");
+		btnEditTeam = new JButton("팀 관리");
+		btnEditTeam.setFont(new Font("Gulim", Font.PLAIN, 12));
 		btnEditTeam.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				AdminEditTeam admin = new AdminEditTeam();
+				AdminTeamEdit admin = new AdminTeamEdit();
 				admin.setVisible(true);
 				dispose();
 			}
@@ -65,6 +75,7 @@ public class AdminMain extends JFrame {
 		contentPane.add(btnEditTeam);
 		
 		btnMain = new JButton("Home");
+		btnMain.setFont(new Font("굴림", Font.BOLD, 12));
 		btnMain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SportsAlarmMain sam = new SportsAlarmMain();

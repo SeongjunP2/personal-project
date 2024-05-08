@@ -23,8 +23,8 @@ import model.SportsTeam;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 
-public class AdminCreateFrame extends JFrame {
-	private static final String[] COLUMN_LEGUES = { "EPL(영국 축구)", "KBO(한국 프로야구)" };
+public class AdminTeamCreateFrame extends JFrame {
+	private static final String[] COLUMN_LEAGUES = { "EPL(영국 축구)", "KBO(한국 프로야구)" };
 	
 	public interface CreateNotify {
 		void notifyCreateSuccess();
@@ -55,7 +55,7 @@ public class AdminCreateFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AdminCreateFrame frame = new AdminCreateFrame(parent, app);
+					AdminTeamCreateFrame frame = new AdminTeamCreateFrame(parent, app);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -64,7 +64,7 @@ public class AdminCreateFrame extends JFrame {
 		});
 	}
 	
-	public AdminCreateFrame(Component parent, CreateNotify app) {
+	public AdminTeamCreateFrame(Component parent, CreateNotify app) {
 		this.parent = parent;
 		this.app = app;
 		
@@ -103,7 +103,7 @@ public class AdminCreateFrame extends JFrame {
 		
 		comboBoxLeague = new JComboBox<>();
         final DefaultComboBoxModel<String> comboBoxModel = 
-                new DefaultComboBoxModel<>(COLUMN_LEGUES);
+                new DefaultComboBoxModel<>(COLUMN_LEAGUES);
         comboBoxLeague.setModel(comboBoxModel);
         comboBoxLeague.setFont(new Font("D2Coding", Font.PLAIN, 15));
 		comboBoxLeague.setBounds(80, 33, 346, 46);
@@ -114,27 +114,11 @@ public class AdminCreateFrame extends JFrame {
 		lblTeam.setBounds(12, 103, 67, 46);
 		contentPane.add(lblTeam);
 		
-		// 파일 첨부 버튼 추가
-		btnEmblem = new JButton("첨부파일");
-		btnEmblem.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        // 파일 선택 대화상자 열기
-		        JFileChooser fileChooser = new JFileChooser();
-		        fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif")); // 이미지 파일 필터 설정
-		        int result = fileChooser.showOpenDialog(AdminCreateFrame.this); // 파일 선택 대화상자를 모달로 열기
-		        
-		        if (result == JFileChooser.APPROVE_OPTION) { // 사용자가 파일을 선택했을 때
-		            File selectedFile = fileChooser.getSelectedFile(); // 선택한 파일 가져오기
-		            String emblemPath = selectedFile.getAbsolutePath(); // 선택한 파일의 경로 가져오기
-		            
-		            // 파일 경로를 emblemPath 변수에 저장
-		            textEmblem.setText(emblemPath);
-		        }
-		    }
-		});
-		btnEmblem.setFont(new Font("굴림", Font.PLAIN, 13));
-		btnEmblem.setBounds(80, 166, 89, 46);
-		contentPane.add(btnEmblem);
+		textTeam = new JTextField();
+		textTeam.setFont(new Font("굴림", Font.PLAIN, 15));
+		textTeam.setColumns(10);
+		textTeam.setBounds(80, 106, 346, 44);
+		contentPane.add(textTeam);
 		
 		lblWriter = new JLabel("로고");
 		lblWriter.setFont(new Font("굴림", Font.BOLD, 17));
@@ -150,6 +134,36 @@ public class AdminCreateFrame extends JFrame {
 		btnSave.setFont(new Font("굴림", Font.BOLD, 17));
 		btnSave.setBounds(12, 234, 193, 49);
 		contentPane.add(btnSave);
+	    
+	    // 파일 첨부 버튼 추가
+	    btnEmblem = new JButton("첨부파일");
+	    btnEmblem.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            // 파일 선택 대화상자 열기
+	            JFileChooser fileChooser = new JFileChooser();
+	            fileChooser.setFileFilter(new FileNameExtensionFilter("이미지 파일", "jpg", "jpeg", "png", "gif")); // 이미지 파일 필터 설정
+	            int result = fileChooser.showOpenDialog(AdminTeamCreateFrame.this); // 파일 선택 대화상자를 모달로 열기
+	            
+	            if (result == JFileChooser.APPROVE_OPTION) { // 사용자가 파일을 선택했을 때
+	                File selectedFile = fileChooser.getSelectedFile(); // 선택한 파일 가져오기
+	                String emblemPath = selectedFile.getAbsolutePath(); // 선택한 파일의 경로 가져오기
+	                
+	                // 파일 경로를 emblemPath 변수에 저장
+	                textEmblem.setText(emblemPath);
+	            }
+	        }
+	    });
+	    btnEmblem.setFont(new Font("굴림", Font.PLAIN, 13));
+	    btnEmblem.setBounds(80, 166, 89, 46);
+	    contentPane.add(btnEmblem);
+		
+	    textEmblem = new JTextArea();
+	    textEmblem.setLineWrap(true); // 텍스트가 영역을 벗어나면 자동으로 줄 바꿈
+	    textEmblem.setWrapStyleWord(true); // 단어 단위로 줄 바꿈
+	    textEmblem.setFont(new Font("굴림", Font.PLAIN, 12));
+	    textEmblem.setColumns(10);
+	    textEmblem.setBounds(174, 165, 252, 46);
+	    contentPane.add(textEmblem);
 		
 		btnCancel = new JButton("취소");
 		btnCancel.addActionListener(new ActionListener() {
@@ -161,20 +175,6 @@ public class AdminCreateFrame extends JFrame {
 		btnCancel.setFont(new Font("굴림", Font.BOLD, 17));
 		btnCancel.setBounds(249, 234, 193, 49);
 		contentPane.add(btnCancel);
-		
-		textTeam = new JTextField();
-		textTeam.setFont(new Font("굴림", Font.PLAIN, 15));
-		textTeam.setColumns(10);
-		textTeam.setBounds(80, 106, 346, 44);
-		contentPane.add(textTeam);
-		
-	    textEmblem = new JTextArea();
-	    textEmblem.setLineWrap(true); // 텍스트가 영역을 벗어나면 자동으로 줄 바꿈
-	    textEmblem.setWrapStyleWord(true); // 단어 단위로 줄 바꿈
-	    textEmblem.setFont(new Font("굴림", Font.PLAIN, 12));
-	    textEmblem.setColumns(10);
-	    textEmblem.setBounds(174, 165, 252, 46);
-	    contentPane.add(textEmblem);
 	}
 	
 	private void createNewTeam() {
@@ -182,10 +182,9 @@ public class AdminCreateFrame extends JFrame {
 		String league = (String) comboBoxLeague.getSelectedItem();
 		String team = textTeam.getText();
 	    String emblemPath = textEmblem.getText(); // textEmblem 텍스트 필드의 내용을 emblemPath 변수에 저장
-	    System.out.println(emblemPath);
 		if (league.equals("") || team.equals("") || emblemPath.equals("")) {
 			JOptionPane.showMessageDialog(
-					AdminCreateFrame.this,
+					AdminTeamCreateFrame.this,
 					"리그, 팀 이름, 팀 로고는 반드시 입력, 지정해야 합니다.",
 					"경고",
 					JOptionPane.WARNING_MESSAGE);
@@ -199,7 +198,7 @@ public class AdminCreateFrame extends JFrame {
 			app.notifyCreateSuccess();
 			dispose(); // 현재 창 닫기.
 		} else {
-			JOptionPane.showMessageDialog(AdminCreateFrame.this, "INSERT 실패");
+			JOptionPane.showMessageDialog(AdminTeamCreateFrame.this, "INSERT 실패");
 		}
 	}
 	

@@ -6,17 +6,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import javax.swing.JPanel;
-import javax.swing.BoxLayout;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 
+import controller.ScheduleDao;
 import controller.SportsTeamDao;
+import model.Schedule;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.Calendar;
 import java.util.List;
@@ -26,10 +30,8 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import java.awt.Font;
 import javax.swing.SwingConstants;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 
-public class SportsAlarmBaseball {
+public class SportsAlarmFootballbck {
 
 	private JFrame frame;
 	private JPanel panelCal;
@@ -50,7 +52,8 @@ public class SportsAlarmBaseball {
 	protected String[] week = {"일", "월", "화", "수", "목", "금", "토"};
 	private JButton btnBack;
 	
-    private SportsTeamDao dao = SportsTeamDao.getInstance();
+    private SportsTeamDao teamDao = SportsTeamDao.getInstance();
+    private ScheduleDao scheduleDao = ScheduleDao.getInstance();
     private String[] COLUMN_TEAMS;
 	
 	//파라미터: 색상, 선 두께, border의 모서리를 둥글게 할 것인지
@@ -67,7 +70,7 @@ public class SportsAlarmBaseball {
 			public void run() {
 				try {
 				    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); // Swing 디자인을 LookAndFeel 테마로 변경
-				    SportsAlarmBaseball window = new SportsAlarmBaseball();
+					SportsAlarmFootballbck window = new SportsAlarmFootballbck();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -79,7 +82,7 @@ public class SportsAlarmBaseball {
 	/**
 	 * Create the application.
 	 */
-	public SportsAlarmBaseball() {
+	public SportsAlarmFootballbck() {
 		initialize();
 		createCalendar();
 	}
@@ -137,78 +140,22 @@ public class SportsAlarmBaseball {
         panelContent.setBounds(398, 37, 208, 359);
         panelCal.add(panelContent);
         panelContent.setBorder(border);
-        panelContent.setLayout(null);
-        
+        panelContent.setLayout(new BorderLayout()); // panelContent의 레이아웃을 BorderLayout으로 설정
+
         textDate = new JTextField();
-        textDate.setBounds(6, 6, 106, 22);
         textDate.setHorizontalAlignment(SwingConstants.CENTER);
         textDate.setFont(new Font("굴림", Font.PLAIN, 13));
-        panelContent.add(textDate);
-        textDate.setColumns(10);
-        
-        btnSchedule = new JButton("일정 추가");
-        btnSchedule.setBounds(117, 6, 85, 23);
+        panelContent.add(textDate, BorderLayout.NORTH); // textDate를 BorderLayout의 NORTH에 배치
+
+        btnSchedule = new JButton("알람 추가");
         btnSchedule.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-                // 일정 추가 다이얼로그 생성
-                JFrame dialogFrame = new JFrame();
-                dialogFrame.setBounds(100, 100, 300, 200);
-                dialogFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                dialogFrame.getContentPane().setLayout(new BorderLayout());
-                
-                JPanel panel = new JPanel();
-                dialogFrame.getContentPane().add(panel, BorderLayout.CENTER);
-                panel.setLayout(new GridLayout(0, 2, 0, 0));
-                
-                JLabel lblTime = new JLabel("시간:");
-                panel.add(lblTime);
-                
-                JComboBox<Integer> comboBoxHour = new JComboBox<>();
-                for (int hour = 0; hour <= 23; hour++) {
-                    comboBoxHour.addItem(hour);
-                }
-                panel.add(comboBoxHour);
-                
-                JLabel lblMinute = new JLabel("분:");
-                panel.add(lblMinute);
-                
-                JComboBox<Integer> comboBoxMinute = new JComboBox<>();
-                for (int minute = 0; minute <= 59; minute++) {
-                    comboBoxMinute.addItem(minute);
-                }
-                panel.add(comboBoxMinute);
-                
-                JButton btnAddSchedule = new JButton("일정 추가");
-                btnAddSchedule.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        // 선택한 시간과 분을 가져옴
-                        int selectedHour = (int) comboBoxHour.getSelectedItem();
-                        int selectedMinute = (int) comboBoxMinute.getSelectedItem();
-                        // 선택한 날짜 가져옴
-                        String selectedDate = textDate.getText().trim();
-                        // 선택한 팀 가져옴
-                        String selectedTeam = (String) comboBoxTeam.getSelectedItem();
-                        // 일정 추가 작업 수행
-                        addSchedule(selectedDate, selectedTeam, selectedHour, selectedMinute);
-                        // panelContent의 레이아웃을 BorderLayout으로 설정
-                        panelContent.setLayout(new BoxLayout(panelContent, BoxLayout.Y_AXIS));
-                        // 추가한 일정을 패널에 표시
-                        JLabel lblSchedule = new JLabel(selectedDate + " " + selectedTeam + " " + selectedHour + ":" + selectedMinute);
-                        tableSchedule.add(lblSchedule);
-                        // 패널을 다시 그리기
-                        panelContent.revalidate();
-                        panelContent.repaint();
-                        // 다이얼로그 닫기
-                        dialogFrame.dispose();
-                    }
-                });
-                panel.add(btnAddSchedule);
-                
-                dialogFrame.setVisible(true);
+            public void actionPerformed(ActionEvent e) {
+                // 일정 작성 창 띄우기
+//                AddScheduleFrame.ShowAddScheduleFrame(frame, SportsAlarmFootball.this);
             }
         });
         btnSchedule.setFont(new Font("Gulim", Font.PLAIN, 12));
-        panelContent.add(btnSchedule);
+        panelContent.add(btnSchedule, BorderLayout.SOUTH); // btnSchedule를 BorderLayout의 SOUTH에 배치
         
         scrollPane = new JScrollPane();
         scrollPane.setBounds(6, 38, 196, 311);
@@ -227,7 +174,41 @@ public class SportsAlarmBaseball {
         
         comboBoxTeam = new JComboBox<>();
         comboBoxTeam.setFont(new Font("굴림", Font.PLAIN, 16));
-        List<String> teamNames = dao.getTeamsByBaseball("KBO(한국 프로야구)");
+        // comboBoxTeam의 선택 이벤트 처리
+        comboBoxTeam.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 선택된 팀 가져오기
+                String selectedTeam = (String) comboBoxTeam.getSelectedItem();
+                
+                // 선택된 팀의 일정 가져오기
+                List<Schedule> teamSchedules = scheduleDao.getTeamSchedules(selectedTeam);
+                
+                // 가져온 일정의 날짜와 버튼의 년, 월, 일 값을 비교하여 버튼 색상 변경
+                for (Schedule schedule : teamSchedules) {
+                    int scheduleYear = schedule.getYear();
+                    int scheduleMonth = schedule.getMonth();
+                    int scheduleDay = schedule.getDay();
+                    
+                    // 모든 버튼을 가져와서 해당하는 년, 월, 일 값과 비교
+                    Component[] components = panelCalMain.getComponents();
+                    for (Component component : components) {
+                        if (component instanceof JButton) {
+                            JButton btn = (JButton) component;
+                            int btnYear = (int) btn.getClientProperty("year");
+                            int btnMonth = (int) btn.getClientProperty("month");
+                            int btnDay = (int) btn.getClientProperty("day");
+                            
+                            // 버튼의 년, 월, 일 값과 일정의 날짜가 일치하는 경우 버튼 색상 변경
+                            if (btnYear == scheduleYear && btnMonth == scheduleMonth && btnDay == scheduleDay) {
+                                btn.setBackground(Color.RED); // 예시로 색상을 빨간색으로 변경
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        List<String> teamNames = teamDao.getTeamsByFootball("EPL(영국 축구)");
         COLUMN_TEAMS = teamNames.toArray(new String[0]);
         final DefaultComboBoxModel<String> comboBoxModel = 
                 new DefaultComboBoxModel<>(COLUMN_TEAMS);
@@ -274,14 +255,21 @@ public class SportsAlarmBaseball {
         }
 
         for (int i = 1; i <= monthDay; i++) {
-        	JButton btnDay = new JButton(Integer.toString(i));
-        	btnDay.addActionListener(new ActionListener() {
-            	public void actionPerformed(ActionEvent e) {
-            		textDate.setText(
-            				year + "년 " + 
-            				(month + 1) + "월 " + 
-            				btnDay.getText() + "일 ");
-            	}
+            JButton btnDay = new JButton(Integer.toString(i));
+            // 각 버튼의 년, 월, 일 값을 저장
+            btnDay.putClientProperty("year", year);
+            btnDay.putClientProperty("month", month);
+            btnDay.putClientProperty("day", i);
+            
+            // 버튼 클릭 이벤트 처리
+            btnDay.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    // 선택된 날짜 정보를 텍스트 필드에 표시
+                    textDate.setText(
+                        year + "년 " + 
+                        (month + 1) + "월 " + 
+                        btnDay.getText() + "일 ");
+                }
             });
             panelCalMain.add(btnDay);
         }
@@ -291,14 +279,4 @@ public class SportsAlarmBaseball {
         frame.revalidate();
         frame.repaint();
     }
-    
-    
-	// 일정을 추가하는 메서드
-	private void addSchedule(String date, String team, int hour, int minute) {
-		// 여기에 일정을 추가하는 코드를 작성하면 됩니다.
-		// 예를 들어, 이 메서드를 통해 데이터베이스에 일정을 추가하거나,
-		// 다른 방법으로 일정을 저장하고 처리할 수 있습니다.
-		// 이 예제에서는 그냥 콘솔에 출력하는 것으로 가정합니다.
-		System.out.println("일정 추가: " + date + " " + team + " " + hour + ":" + minute);
-	}
 }

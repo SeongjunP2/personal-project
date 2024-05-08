@@ -21,7 +21,11 @@ create table sports_teams (
 --values ('KBO 리그');
 
 create table schedule_date (
+    id number generated always as identity,
     team varchar2(100 char) not null,
     other_team varchar2(100 char) not null,
-    created_date date
+    created_date varchar2(100 char) not null,
+    constraint schedule_date_pk primary key(id)
 );
+
+drop table schedule_date;

@@ -16,7 +16,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 
-public class AdminUpdateSchedule {
+public class AdminTeamUpdateSchedule {
 
 	private JFrame frame;
 	private JPanel panelCal;
@@ -44,7 +44,7 @@ public class AdminUpdateSchedule {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AdminUpdateSchedule window = new AdminUpdateSchedule();
+					AdminTeamUpdateSchedule window = new AdminTeamUpdateSchedule();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -56,7 +56,7 @@ public class AdminUpdateSchedule {
 	/**
 	 * Create the application.
 	 */
-	public AdminUpdateSchedule() {
+	public AdminTeamUpdateSchedule() {
 		initialize();
 		createCalendar();
 	}

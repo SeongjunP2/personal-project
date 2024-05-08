@@ -1,6 +1,6 @@
 package controller;
 
-import static model.SportsTeam.Entity.*;
+import static model.Schedule.Entity.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,17 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static jdbc.OracleJdbc.*;
+
+import model.Schedule;
 //import static model.SportsAlarm.Entity.*;
-import model.SportsTeam;
 import oracle.jdbc.OracleDriver;
 
 
-public class SportsTeamDao {
+public class ScheduleDao {
 	
 	//-----> singleton
-    private static SportsTeamDao instance = null;
+    private static ScheduleDao instance = null;
     
-    private SportsTeamDao() {
+    private ScheduleDao() {
         try {
             // Oracle 드라이버(라이브러리)를 등록.
             DriverManager.registerDriver(new OracleDriver());
@@ -31,9 +32,9 @@ public class SportsTeamDao {
         }
     }
     
-    public static SportsTeamDao getInstance() {
+    public static ScheduleDao getInstance() {
         if (instance == null) {
-            instance = new SportsTeamDao();
+            instance = new ScheduleDao();
         }
         
         return instance;
@@ -66,21 +67,21 @@ public class SportsTeamDao {
     }
     
     // ResultSet에서 각 컬럼의 값들을 읽어서 SportsAlarm 타입 객체를 생성하고 리턴.
-    private SportsTeam makeTeamFromResultSet(ResultSet rs) throws SQLException {
+    private Schedule makeScheduleFromResultSet(ResultSet rs) throws SQLException {
     	int id = rs.getInt(COL_ID);
-        String league = rs.getString(COL_LEAGUE);
         String team = rs.getString(COL_TEAM);
-        String emblemPath = rs.getString(COL_EMBLEMPATH);
+        String otherTeam = rs.getString(COL_OTHER_TEAM);
+        String date = rs.getString(COL_CREATED_DATE);
         
-        SportsTeam footballTeam = new SportsTeam(id, league, team, emblemPath);
+        Schedule schedule = new Schedule(id, team, otherTeam, date);
         
-		return footballTeam;
+		return schedule;
     }
     
     // read() 메서드에서 사용할 SQL 문장: select * from football_teams order by id desc
     private static final String SQL_SELECT_ALL = String.format(
             "select * from %s order by %s desc", 
-            TBL_SPORTS_TEAMS, COL_ID);
+            TBL_SCHEDULE_DATE, COL_ID);
     
     /**
      * 데이터베이스 테이블 FOOTBALL_TEAMS 테이블에서 모든 레코드(행)를 검색해서 
@@ -88,8 +89,8 @@ public class SportsTeamDao {
      * 테이블에 행이 없는 경우 빈 리스트를 리턴.
      * @return SportsAlarm를 원소로 갖는 ArrayList.
      */
-    public List<SportsTeam> read() {
-        List<SportsTeam> result = new ArrayList<>();
+    public List<Schedule> read() {
+        List<Schedule> result = new ArrayList<>();
         
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -103,8 +104,8 @@ public class SportsTeamDao {
             rs = stmt.executeQuery();
             // 결과 처리.
             while (rs.next()) {
-            	SportsTeam sportsAlarm = makeTeamFromResultSet(rs);
-                result.add(sportsAlarm);
+            	Schedule schedule = makeScheduleFromResultSet(rs);
+                result.add(schedule);
             }
             
         } catch (SQLException e) {
@@ -116,7 +117,7 @@ public class SportsTeamDao {
         return result;
     }
     
-    // 팀 이름만 불러오는 메서드
+    // 현재 팀 이름만 불러오는 메서드
     public List<String> getTeamNames() {
         List<String> teamNames = new ArrayList<>();
         
@@ -125,7 +126,7 @@ public class SportsTeamDao {
         ResultSet rs = null;
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            stmt = conn.prepareStatement("select team from " + TBL_SPORTS_TEAMS); // 팀이름만 불러오는 SQL 문장
+            stmt = conn.prepareStatement("select team from " + TBL_SCHEDULE_DATE); // 팀이름만 불러오는 SQL 문장
             rs = stmt.executeQuery();
             while (rs.next()) {
                 teamNames.add(rs.getString("team"));
@@ -139,8 +140,8 @@ public class SportsTeamDao {
         return teamNames;
     }
     
-    // 축구(EPL) 리그에 속하는 팀 이름만 반환하는 메서드 추가
-    public List<String> getTeamsByFootball(String league) {
+    // 상대 팀 이름만 반환하는 메서드 추가
+    public List<String> getOtherTeam(String league) {
         List<String> teamNames = new ArrayList<>();
 
         Connection conn = null;
@@ -148,7 +149,7 @@ public class SportsTeamDao {
         ResultSet rs = null;
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            stmt = conn.prepareStatement("select team from " + TBL_SPORTS_TEAMS + " where league = 'EPL(영국 축구)'"); // 리그만 불러오는 SQL 문장
+            stmt = conn.prepareStatement("select team from " + TBL_SCHEDULE_DATE); // 상대 팀이름만 불러오는 SQL 문장
             rs = stmt.executeQuery();
             while (rs.next()) {
                 teamNames.add(rs.getString("team"));
@@ -162,43 +163,22 @@ public class SportsTeamDao {
         return teamNames;
     }
     
-    // 야구(KBO) 리그에 속하는 팀 이름만 반환하는 메서드 추가
-    public List<String> getTeamsByBaseball(String league) {
-        List<String> teamNames = new ArrayList<>();
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            stmt = conn.prepareStatement("select team from " + TBL_SPORTS_TEAMS + " where league = 'KBO(한국 프로야구)'"); // 리그만 불러오는 SQL 문장
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                teamNames.add(rs.getString("team"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, stmt, rs);
-        }
-        
-        return teamNames;
-    }
-    
-	// 특정 팀의 리그를 반환하는 메서드
-	public String getTeamLeague(String team) {
-		String league = null;
+	// 특정 팀의 일정을 가져오는 메서드
+	public List<Schedule> getTeamSchedules(String teamName) {
+		List<Schedule> teamSchedules = new ArrayList<>();
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
-			stmt = conn.prepareStatement("SELECT league FROM " + TBL_SPORTS_TEAMS + " WHERE team = ?");
-			stmt.setString(1, team);
+			String sql = "select * from " + TBL_SCHEDULE_DATE + " where " + COL_TEAM + " = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, teamName);
 			rs = stmt.executeQuery();
-			if (rs.next()) {
-				league = rs.getString("league");
+			while (rs.next()) {
+				Schedule schedule = makeScheduleFromResultSet(rs);
+				teamSchedules.add(schedule);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -206,70 +186,21 @@ public class SportsTeamDao {
 			closeResources(conn, stmt, rs);
 		}
 
-		return league;
+		return teamSchedules;
 	}
-	
-	// 팀 이름으로 해당 팀의 이미지 경로를 가져오기
-	public String getTeamEmblemPathByTeam(String team) {
-	    String emblemPath = null;
-
-	    Connection conn = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
-	    try {
-	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	        stmt = conn.prepareStatement("select emblem_path from " + TBL_SPORTS_TEAMS + " where team = ?");
-	        stmt.setString(1, team);
-	        rs = stmt.executeQuery();
-	        if (rs.next()) {
-	            emblemPath = rs.getString("emblem_path");
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        closeResources(conn, stmt, rs);
-	    }
-
-	    return emblemPath;
-	}
-	
-	// 팀 이름으로 해당 팀의 경기날짜 상대팀 이미지 경로를 가져오기
-	public String getOtherTeamEmblemPathByTeam(String team) {
-	    String emblemPath = null;
-
-	    Connection conn = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
-	    try {
-	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	        stmt = conn.prepareStatement("select emblem_path from " + TBL_SPORTS_TEAMS + " where other_team = ?");
-	        stmt.setString(1, team);
-	        rs = stmt.executeQuery();
-	        if (rs.next()) {
-	            emblemPath = rs.getString("emblem_path");
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        closeResources(conn, stmt, rs);
-	    }
-
-	    return emblemPath;
-	}
-
     
     // create(SportsAlarm sportsAlarm) 메서드에서 사용할 SQL:
-    // insert into football_teams (league, team, country) values (?, ?, ?)
+    // insert into football_teams (team, otherTeam, date) values (?, ?, ?)
     private static final String SQL_INSERT = String.format(
     		"insert into %s (%s, %s, %s) values (?, ?, ?)",
-    		TBL_SPORTS_TEAMS, COL_LEAGUE, COL_TEAM, COL_EMBLEMPATH);
+    		TBL_SCHEDULE_DATE, COL_TEAM, COL_OTHER_TEAM, COL_CREATED_DATE);
     
     /**
      * 데이터베이스의 FOOTBALL_TEAMS 테이블에 행을 삽입.
      * @param football_teams 테이블에 삽입할 제목, 내용, 작성자 정보를 가지고 있는 객체
      * @return 테이블에 삽입된 행의 개수.
      */
-    public int create(SportsTeam sportsTeam) {
+    public int create(Schedule schedule) {
     	int result = 0;
     	
     	Connection conn = null;
@@ -277,9 +208,9 @@ public class SportsTeamDao {
     	try {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD); // DB 접속.
 			stmt = conn.prepareStatement(SQL_INSERT); // Statement 객체 생성.
-			stmt.setString(1, sportsTeam.getLeague()); // statement의 첫번째 ? 채움.
-			stmt.setString(2, sportsTeam.getTeam()); // statenebt의 두번째 ? 채움.
-			stmt.setString(3, sportsTeam.getEmblemPath()); // statenebt의 세번째 ? 채움.
+			stmt.setString(1, schedule.getTeam()); // statement의 첫번째 ? 채움.
+			stmt.setString(2, schedule.getOtherTeam()); // statenebt의 두번째 ? 채움.
+			stmt.setString(3, schedule.getDate()); // statenebt의 세번째 ? 채움.
 			result = stmt.executeUpdate(); // SQL 실행.
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -293,7 +224,7 @@ public class SportsTeamDao {
     // delete(int id) 메서드에서 사용할 SQL: delete from football_teams where id = ?
     private static final String SQL_DELETE = String.format(
     		"delete from %s where %s = ?",
-    		TBL_SPORTS_TEAMS, COL_ID);
+    		TBL_SCHEDULE_DATE, COL_ID);
     
     /**
      * 테이블 FOOTBALL_TEAMS 에서 고유키(PK) id에 해당하는 레코드(행)를 삭제.
@@ -320,23 +251,23 @@ public class SportsTeamDao {
     	return result;
     }
     
-    // 리그에 검색 키워드가 포함된 검색 결과:
+    // 현재 팀에 검색 키워드가 포함된 검색 결과:
     // select * from SPORTS_TEAMS where lower(league) like ? order by id desc
-    private static final String SQL_SELECT_BY_LEAGUE = String.format(
-    		"select * from %s where lower(%s) like ? order by %s desc", 
-    		TBL_SPORTS_TEAMS, COL_LEAGUE, COL_ID);
-    
-    // 팀에 검색 키워드가 포함된 검색 결과: 
-    // select * from SPORTS_TEAMS where lower(team) like ? order by id desc
     private static final String SQL_SELECT_BY_TEAM = String.format(
     		"select * from %s where lower(%s) like ? order by %s desc", 
-    		TBL_SPORTS_TEAMS, COL_TEAM, COL_ID);
+    		TBL_SCHEDULE_DATE, COL_TEAM, COL_ID);
     
-    // 리그 또는 팀에 검색 키워드가 포함된 검색 결과:
+    // 상대 팀에 검색 키워드가 포함된 검색 결과: 
+    // select * from SPORTS_TEAMS where lower(team) like ? order by id desc
+    private static final String SQL_SELECT_BY_OTHERTEAM = String.format(
+    		"select * from %s where lower(%s) like ? order by %s desc", 
+    		TBL_SCHEDULE_DATE, COL_OTHER_TEAM, COL_ID);
+    
+    // 현재 팀 또는 상대 팀에 검색 키워드가 포함된 검색 결과:
     // select * from SPORTS_TEAMS where lower(league) like ? or lower(team) like ? order by id desc
-    private static final String SQL_SELECT_BY_LEAGUE_OR_TEAM = String.format(
+    private static final String SQL_SELECT_BY_TEAM_OR_OTHERTEAM = String.format(
     		"select * from %s where lower(%s) like ? or lower(%s) like ? order by %s desc",
-    		TBL_SPORTS_TEAMS, COL_LEAGUE, COL_TEAM, COL_ID);
+    		TBL_SCHEDULE_DATE, COL_TEAM, COL_OTHER_TEAM, COL_ID);
     
     /**
      * 제목, 내용, 제목 또는 내용, 작성자로 검색하기.
@@ -345,8 +276,8 @@ public class SportsTeamDao {
      * @param keyword 검색 문자열.
      * @return 검색 결과 리스트. 검색 결과가 없으면 빈 리스트.
      */
-    public List<SportsTeam> search(int type, String keyword) {
-    	List<SportsTeam> result = new ArrayList<>();
+    public List<Schedule> search(int type, String keyword) {
+    	List<Schedule> result = new ArrayList<>();
     	
     	Connection conn = null;
     	PreparedStatement stmt = null;
@@ -356,15 +287,15 @@ public class SportsTeamDao {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
 			switch (type) {
 			case 0: // 리그로 검색
-				stmt = conn.prepareStatement(SQL_SELECT_BY_LEAGUE);
-				stmt.setString(1, searchKeyword);
-				break;
-			case 1: // 팀으로 검색
 				stmt = conn.prepareStatement(SQL_SELECT_BY_TEAM);
 				stmt.setString(1, searchKeyword);
 				break;
+			case 1: // 팀으로 검색
+				stmt = conn.prepareStatement(SQL_SELECT_BY_OTHERTEAM);
+				stmt.setString(1, searchKeyword);
+				break;
 			case 2: // 리그 또는 팀으로 검색
-				stmt = conn.prepareStatement(SQL_SELECT_BY_LEAGUE_OR_TEAM);
+				stmt = conn.prepareStatement(SQL_SELECT_BY_TEAM_OR_OTHERTEAM);
 				stmt.setString(1, searchKeyword);
 				stmt.setString(2, searchKeyword);
 				break;
@@ -372,8 +303,8 @@ public class SportsTeamDao {
 			
 			rs = stmt.executeQuery();
 			while (rs.next()) {
-				SportsTeam footballTeam = makeTeamFromResultSet(rs);
-                result.add(footballTeam);
+				Schedule schedule = makeScheduleFromResultSet(rs);
+                result.add(schedule);
 			}
 			
 		} catch (SQLException e) {
@@ -388,15 +319,15 @@ public class SportsTeamDao {
     // 아이디(PK)로 검색하기:
     private static final String SQL_SELECT_BY_ID = String.format(
             "select * from %s where %s = ?", 
-            TBL_SPORTS_TEAMS, COL_ID);
+            TBL_SCHEDULE_DATE, COL_ID);
     
     /**
      * FOOTBALL_TEAMS 테이블의 고유키 id를 전달받아서, 해당 FootballTeam 객체를 리턴.
      * @param id 검색하기 위한 고유키.
      * @return 테이블에서 검색한 FootballTeam 객체. 고유키에 해당하는 행이 없는 경우 null을 리턴.
      */
-    public SportsTeam read(int id) {
-    	SportsTeam footballTeam = null;
+    public Schedule read(int id) {
+    	Schedule schedule = null;
         
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -407,7 +338,7 @@ public class SportsTeamDao {
             stmt.setInt(1, id);
             rs = stmt.executeQuery();
             if (rs.next()) {
-            	footballTeam = makeTeamFromResultSet(rs);
+            	schedule = makeScheduleFromResultSet(rs);
             }
             
         } catch (SQLException e) {
@@ -416,19 +347,19 @@ public class SportsTeamDao {
             closeResources(conn, stmt, rs);
         }
         
-        return footballTeam;
+        return schedule;
     }
     
     private static final String SQL_UPDATE = String.format(
             "update %s set %s = ?, %s = ?, %s = ? where %s = ?", 
-            TBL_SPORTS_TEAMS, COL_LEAGUE, COL_TEAM, COL_EMBLEMPATH, COL_ID);
+            TBL_SCHEDULE_DATE, COL_TEAM, COL_TEAM, COL_OTHER_TEAM, COL_ID);
     
     /**
      * football_teams 테이블 업데이트.
      * @param FootballTeams 업데이트할 id(고유키), 리그, 팀을 가지고 있는 객체.
      * @return 업데이트한 행의 개수.
      */
-    public int update(SportsTeam SportsTeams) {
+    public int update(Schedule schedule) {
         int result = 0;
         
         Connection conn = null;
@@ -436,10 +367,10 @@ public class SportsTeamDao {
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             stmt = conn.prepareStatement(SQL_UPDATE);
-            stmt.setString(1, SportsTeams.getLeague());
-            stmt.setString(2, SportsTeams.getTeam());
-            stmt.setString(3, SportsTeams.getEmblemPath());
-            stmt.setInt(4, SportsTeams.getId());
+            stmt.setString(1, schedule.getTeam());
+            stmt.setString(2, schedule.getOtherTeam());
+            stmt.setString(3, schedule.getDate());
+            stmt.setInt(4, schedule.getId());
             result = stmt.executeUpdate();
             
         } catch (SQLException e) {

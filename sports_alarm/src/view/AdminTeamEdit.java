@@ -17,10 +17,11 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.SportsTeamDao;
 import model.SportsTeam;
-import view.AdminCreateFrame.CreateNotify;
-import view.AdminDetailsFrame.UpdateNotify;
+import view.AdminTeamCreateFrame.CreateNotify;
+import view.AdminTeamDetailsFrame.UpdateNotify;
 
 import java.awt.Font;
+import java.awt.Image;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -31,7 +32,7 @@ import javax.swing.JTable;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class AdminEditTeam implements CreateNotify, UpdateNotify {
+public class AdminTeamEdit implements CreateNotify, UpdateNotify {
     private static final String[] SEARCH_TYPES  = { 
             "리그", "팀 이름", "리그+팀 이름" 
     };
@@ -54,6 +55,7 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
     private DefaultTableModel tableModel;
     
     private SportsTeamDao dao = SportsTeamDao.getInstance();
+    private JButton btnBack;
 
     /**
      * Launch the application.
@@ -63,7 +65,7 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
             public void run() {
                 try {
 				    UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel"); // Swing 디자인을 LookAndFeel 테마로 변경
-                	AdminEditTeam window = new AdminEditTeam();
+                	AdminTeamEdit window = new AdminTeamEdit();
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -75,7 +77,7 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
     /**
      * Create the application.
      */
-    public AdminEditTeam() {
+    public AdminTeamEdit() {
         initialize();
         initializeTable();
     }
@@ -90,13 +92,18 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
         frame.setTitle("스포츠 팀 편집");
         
         searchPanel = new JPanel();
-        frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
+        frame.getContentPane().add(searchPanel, BorderLayout.SOUTH);
         
         comboBox = new JComboBox<>();
         final DefaultComboBoxModel<String> comboBoxModel = 
                 new DefaultComboBoxModel<>(SEARCH_TYPES);
+        
+        btnReadAll = new JButton("새로고침");
+        searchPanel.add(btnReadAll);
+        btnReadAll.addActionListener((e) -> initializeTable());
+        btnReadAll.setFont(new Font("굴림", Font.BOLD, 18));
         comboBox.setModel(comboBoxModel);
-        comboBox.setFont(new Font("D2Coding", Font.PLAIN, 20));
+        comboBox.setFont(new Font("굴림", Font.PLAIN, 15));
         searchPanel.add(comboBox);
         
         textSearchKeyword = new JTextField();
@@ -106,37 +113,43 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
         
         btnSearch = new JButton("검색");
         btnSearch.addActionListener((e) -> search());
-        btnSearch.setFont(new Font("D2Coding", Font.PLAIN, 20));
+        btnSearch.setFont(new Font("굴림", Font.BOLD, 18));
         searchPanel.add(btnSearch);
         
         buttonPanel = new JPanel();
-        frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-        
-        btnReadAll = new JButton("목록보기");
-        btnReadAll.addActionListener((e) -> initializeTable());
-        btnReadAll.setFont(new Font("D2Coding", Font.PLAIN, 20));
-        buttonPanel.add(btnReadAll);
+        frame.getContentPane().add(buttonPanel, BorderLayout.NORTH);
         
         btnCreate = new JButton("팀 생성");
         btnCreate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 새 팀 작성 창 띄우기
-                AdminCreateFrame.showAdminCreateFrame(frame, AdminEditTeam.this);
+                AdminTeamCreateFrame.showAdminCreateFrame(frame, AdminTeamEdit.this);
             }
         });
-        btnCreate.setFont(new Font("D2Coding", Font.PLAIN, 20));
+        btnCreate.setFont(new Font("굴림", Font.BOLD, 18));
         buttonPanel.add(btnCreate);
         
         btnDetails = new JButton("상세보기");
         btnDetails.addActionListener((e) -> showDetailsFrame());
-        btnDetails.setFont(new Font("D2Coding", Font.PLAIN, 20));
+        btnDetails.setFont(new Font("굴림", Font.BOLD, 18));
         buttonPanel.add(btnDetails);
         
         btnDelete = new JButton("삭제");
         btnDelete.addActionListener((e) -> deleteTeam());
-        btnDelete.setFont(new Font("D2Coding", Font.PLAIN, 20));
+        btnDelete.setFont(new Font("굴림", Font.BOLD, 18));
         buttonPanel.add(btnDelete);
+        
+        btnBack = new JButton("Back");
+        btnBack.setFont(new Font("굴림", Font.PLAIN, 12));
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+        		AdminMain adm = new AdminMain();
+        		adm.setVisible(true);
+				frame.setVisible(false);
+			}
+		});
+        buttonPanel.add(btnBack);
         
         scrollPane = new JScrollPane();
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
@@ -160,7 +173,7 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
         }
         Integer id = (Integer) tableModel.getValueAt(index, 0);
         
-        AdminDetailsFrame.showAdminDetailsFrame(frame, id, AdminEditTeam.this);
+        AdminTeamDetailsFrame.showAdminDetailsFrame(frame, id, AdminTeamEdit.this);
         
     }
 
@@ -189,16 +202,18 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
 	
 	private void resetTable(List<SportsTeam> sportsTeams) {
 		// 검색한 내용을 JTable에 보여줌 - JTable의 테이블 모델을 재설정.
-        tableModel = new DefaultTableModel(null, COLUMN_NAMES); // 테이블 모델 리셋.
-        for (SportsTeam f : sportsTeams) {
-            // DB 테이블에서 검색한 레코드를 JTable에서 사용할 행 데이터로 변환.
+		tableModel = new DefaultTableModel(null, COLUMN_NAMES); // 테이블 모델 리셋.
+		for (SportsTeam f : sportsTeams) {
+			// DB 테이블에서 검색한 레코드를 JTable에서 사용할 행 데이터로 변환.
 			Object[] row = { f.getId(), f.getLeague(), f.getTeam(),
 					// 이미지 파일을 ImageIcon으로 변환하여 삽입
 					new ImageIcon(f.getEmblemPath()) // 이미지 파일 경로를 ImageIcon으로 변환
 			};
-            tableModel.addRow(row); // 테이블 모델에 행 데이터를 추가.
-        }
-        table.setModel(tableModel); // JTable의 모델을 다시 세팅.
+			tableModel.addRow(row); // 테이블 모델에 행 데이터를 추가.
+		}
+		table.setModel(tableModel); // JTable의 모델을 다시 세팅.
+		// 테이블의 행 높이 설정
+		table.setRowHeight(80); // 원하는 행 높이 값으로 설정
         
         // 이미지를 표시하기 위한 TableCellRenderer 정의
         table.getColumnModel().getColumn(3).setCellRenderer(new ImageIconCellRenderer());
@@ -228,7 +243,7 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
 			int result = dao.delete(id);
 			if (result == 1) {
 				initializeTable(); // 테이블을 새로고침
-				JOptionPane.showMessageDialog(frame, "삭제 성공!");
+				JOptionPane.showMessageDialog(frame, "삭제되었습니다!");
 			} else {
 				JOptionPane.showMessageDialog(frame, "삭제 실패!");
 			}
@@ -239,7 +254,7 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
 	public void notifyCreateSuccess() {
 		// 테이블에 insert 성공했을 때 BlogCreateFrame에 호출하는 메서드.
 		initializeTable();
-		JOptionPane.showMessageDialog(frame, "새 팀 등록 성공!");
+		JOptionPane.showMessageDialog(frame, "새 팀 등록이 등록되었습니다!");
 		
 	}
 	
@@ -247,7 +262,7 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
     public void notifyUpdateSuccess() {
         // 테이블에 update 성공했을 때 BlogDetailsFrame이 호출하는 메서드.
         initializeTable();
-        JOptionPane.showMessageDialog(frame, "팀 업데이트 성공!");
+        JOptionPane.showMessageDialog(frame, "팀 정보가 수정되었습니다!");
     }
     
 	public void setVisible(boolean b) {
@@ -258,11 +273,15 @@ public class AdminEditTeam implements CreateNotify, UpdateNotify {
 	class ImageIconCellRenderer extends DefaultTableCellRenderer {
 	    @Override
 	    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-	        // JLabel을 생성하여 ImageIcon을 추가
-	        JLabel label = new JLabel((ImageIcon) value);
-	        // 이미지를 중앙 정렬
+	        JLabel label = new JLabel();
+	        // 이미지 아이콘을 레이블에 설정
+	        label.setIcon((ImageIcon) value);
+	        // 이미지 크기를 조절하여 레이블에 설정
+	        Image image = ((ImageIcon) value).getImage();
+	        Image scaledImage = image.getScaledInstance(table.getRowHeight(), table.getRowHeight(), Image.SCALE_SMOOTH);
+	        label.setIcon(new ImageIcon(scaledImage));
+	        // 레이블을 중앙 정렬
 	        label.setHorizontalAlignment(JLabel.CENTER);
-	        // 레이블 반환
 	        return label;
 	    }
 	}

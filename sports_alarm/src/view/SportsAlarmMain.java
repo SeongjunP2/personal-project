@@ -62,7 +62,7 @@ public class SportsAlarmMain {
 //		Image changeImg = img.getScaledInstance(230, 180, Image.SCALE_SMOOTH);
 //		ImageIcon changeIcon = new ImageIcon(changeImg);
 		
-		btnFootball = new JButton(setImageSize("images/epl.png", 230, 180));
+		btnFootball = new JButton(setImageSize("EPL/epl.png", 230, 180));
 		btnFootball.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SportsAlarmFootball saf = new SportsAlarmFootball();
@@ -71,7 +71,7 @@ public class SportsAlarmMain {
 			}
 		});
 		
-		btnBaseball = new JButton(setImageSize("images/kbo.png", 230, 180));
+		btnBaseball = new JButton(setImageSize("KBO/kbo.png", 230, 180));
 		btnBaseball.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SportsAlarmBaseball sab = new SportsAlarmBaseball();
@@ -85,7 +85,7 @@ public class SportsAlarmMain {
 		frame.getContentPane().add(panelTitle);
 		panelTitle.setLayout(null);
 		
-		lblIconAlarm = new JLabel(setImageSize("images/alarm.png", 30, 30));
+		lblIconAlarm = new JLabel(setImageSize("alarm.png", 30, 30));
 		lblIconAlarm.setBounds(128, 58, 57, 46);
 		panelTitle.add(lblIconAlarm);
 		
@@ -96,16 +96,16 @@ public class SportsAlarmMain {
 		lblTitle.setFont(new Font("굴림", Font.BOLD, 19));
 		panelTitle.add(lblTitle);
 		
-		btnAdminPage = new JButton("AdminLogin");
+		btnAdminPage = new JButton("팀, 일정 관리");
 		btnAdminPage.setFont(new Font("굴림", Font.PLAIN, 12));
 		btnAdminPage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				AdminLogin admin = new AdminLogin();
+				AdminMain admin = new AdminMain();
 				admin.setVisible(true);
 				frame.setVisible(false);
 			}
 		});
-		btnAdminPage.setBounds(388, 10, 99, 23);
+		btnAdminPage.setBounds(382, 10, 105, 23);
 		panelTitle.add(btnAdminPage);
 		frame.getContentPane().add(btnFootball);
 		frame.getContentPane().add(btnBaseball);
@@ -116,7 +116,7 @@ public class SportsAlarmMain {
 	}
 	
 	public ImageIcon setImageSize(String imgUrl , int x, int y) {
-		ImageIcon icon = new ImageIcon(imgUrl);
+		ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imgUrl));
 		Image img = icon.getImage();
 		Image changeImg = img.getScaledInstance(x, y, Image.SCALE_SMOOTH);
 		ImageIcon changeIcon = new ImageIcon(changeImg);
