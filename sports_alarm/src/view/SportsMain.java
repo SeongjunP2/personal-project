@@ -105,7 +105,7 @@ public class SportsMain {
 				frame.setVisible(false);
 			}
 		});
-		btnAdminPage.setBounds(360, 10, 127, 23);
+		btnAdminPage.setBounds(349, 10, 138, 23);
 		panelTitle.add(btnAdminPage);
 		frame.getContentPane().add(btnFootball);
 		frame.getContentPane().add(btnBaseball);
